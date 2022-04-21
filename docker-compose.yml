@@ -1,0 +1,37 @@
+version: '3.4'
+
+networks:
+  game-web-net:
+
+
+volumes:
+  postgres-db:
+    
+services:
+  game-web:
+    image: game-web:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: "development"
+    depends_on:
+      - "postgres"
+    build:
+      context: .
+      dockerfile: Games.Web\Dockerfile
+    ports:
+      - "8000:80"
+      - "8443:443"
+    networks:
+      - game-web-net
+  postgres:
+    image: postgres:latest
+    ports:
+      - "8432:5432"
+    restart: always
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: "Games"
+    networks:
+      - game-web-net
